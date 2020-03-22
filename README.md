@@ -1,4 +1,4 @@
-# A voice-enabled Android ChatBot powered by IBM Watson
+# CoGuard powered by IBM Watson
 
 [![Build Status](https://travis-ci.org/IBM-Cloud/chatbot-watson-android.svg?branch=master)](https://travis-ci.org/IBM-Cloud/chatbot-watson-android)
 
