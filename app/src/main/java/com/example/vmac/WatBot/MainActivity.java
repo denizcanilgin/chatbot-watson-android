@@ -79,11 +79,11 @@ public class MainActivity extends AppCompatActivity {
     watsonAssistant = new Assistant("2019-02-28", new IamAuthenticator(mContext.getString(R.string.assistant_apikey)));
     watsonAssistant.setServiceUrl(mContext.getString(R.string.assistant_url));
 
-    textToSpeech = new TextToSpeech(new IamAuthenticator((mContext.getString(R.string.TTS_apikey))));
-    textToSpeech.setServiceUrl(mContext.getString(R.string.TTS_url));
-
-    speechService = new SpeechToText(new IamAuthenticator(mContext.getString(R.string.STT_apikey)));
-    speechService.setServiceUrl(mContext.getString(R.string.STT_url));
+//    textToSpeech = new TextToSpeech(new IamAuthenticator((mContext.getString(R.string.TTS_apikey))));
+//    textToSpeech.setServiceUrl(mContext.getString(R.string.TTS_url));
+//
+//    speechService = new SpeechToText(new IamAuthenticator(mContext.getString(R.string.STT_apikey)));
+//    speechService.setServiceUrl(mContext.getString(R.string.STT_url));
   }
 
   @Override
@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
-                        speechService.recognizeUsingWebSocket(getRecognizeOptions(capture), new MicrophoneRecognizeDelegate());
+//                        speechService.recognizeUsingWebSocket(getRecognizeOptions(capture), new MicrophoneRecognizeDelegate());
                     } catch (Exception e) {
                         showError(e);
                     }
@@ -423,11 +423,11 @@ public class MainActivity extends AppCompatActivity {
     private class SayTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
-            streamPlayer.playStream(textToSpeech.synthesize(new SynthesizeOptions.Builder()
-                    .text(params[0])
-                    .voice(SynthesizeOptions.Voice.EN_US_LISAVOICE)
-                    .accept(HttpMediaType.AUDIO_WAV)
-                    .build()).execute().getResult());
+//            streamPlayer.playStream(textToSpeech.synthesize(new SynthesizeOptions.Builder()
+//                    .text(params[0])
+//                    .voice(SynthesizeOptions.Voice.EN_US_LISAVOICE)
+//                    .accept(HttpMediaType.AUDIO_WAV)
+//                    .build()).execute().getResult());
             return "Did synthesize";
         }
     }
