@@ -7,12 +7,13 @@
     tools:context="com.example.vmac.WatBot.MainActivity">
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ImageView
+            android:id="@+id/logomain"
+            android:elevation="15dp"
             android:src="@drawable/bgcorona"
             android:layout_marginTop="-25dp"
             android:layout_width="match_parent"

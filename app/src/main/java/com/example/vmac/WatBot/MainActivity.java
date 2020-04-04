@@ -1,7 +1,9 @@
 package com.example.vmac.WatBot;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -19,8 +21,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ibm.cloud.sdk.core.http.HttpMediaType;
@@ -50,12 +55,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 
   private RecyclerView recyclerView;
   private ChatAdapter mAdapter;
-  private ArrayList messageArrayList;
+  private ArrayList<Message> messageArrayList;
   private EditText inputMessage;
   private ImageButton btnSend;
   private ImageButton btnRecord;
@@ -75,6 +80,10 @@ public class MainActivity extends AppCompatActivity {
   private SpeechToText speechService;
   private TextToSpeech textToSpeech;
 
+  int streak_current_user = 0;
+
+  ImageView logo;
+
   private void createServices() {
     watsonAssistant = new Assistant("2019-02-28", new IamAuthenticator(mContext.getString(R.string.assistant_apikey)));
     watsonAssistant.setServiceUrl(mContext.getString(R.string.assistant_url));
@@ -90,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    logo = findViewById(R.id.logomain);
 
     mContext = getApplicationContext();
 
@@ -101,8 +111,8 @@ public class MainActivity extends AppCompatActivity {
     inputMessage.setTypeface(typeface);
     recyclerView = findViewById(R.id.recycler_view);
 
-    messageArrayList = new ArrayList<>();
-    mAdapter = new ChatAdapter(messageArrayList);
+    messageArrayList = new ArrayList<Message>();
+    mAdapter = new ChatAdapter(messageArrayList, MainActivity.this.getApplicationContext());
     microphoneHelper = new MicrophoneHelper(this);
 
     LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -129,6 +139,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view, final int position) {
                 Message audioMessage = (Message) messageArrayList.get(position);
+
+                //if(messageArrayList.get(position).toString().contains("Evde"))
+
                 if (audioMessage != null && !audioMessage.getMessage().isEmpty()) {
                     new SayTask().execute(audioMessage.getMessage());
                 }
@@ -137,6 +150,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLongClick(View view, int position) {
                 recordMessage();
+
+               if(messageArrayList.get(position).getMessage().contains("liderlik"))showStreakDialog();
+
 
             }
         }));
@@ -159,7 +175,25 @@ public class MainActivity extends AppCompatActivity {
 
         createServices();
         sendMessage();
-    };
+
+//      logo.setOnClickListener(new View.OnClickListener() {
+//          @Override
+//          public void onClick(View view) {
+//
+////              messageArrayList.clear();
+////              mAdapter.notifyDataSetChanged();
+//             //   Toast.makeText(getApplicationContext(),"asdassd",0).show();
+//
+//          }
+//      });
+//
+    }
+
+    public void click (View view){
+        Toast.makeText(getApplicationContext(), "ehüüü", Toast.LENGTH_SHORT).show();
+
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -272,6 +306,8 @@ public class MainActivity extends AppCompatActivity {
 
                                                     messageArrayList.add(outMessage);
 
+
+
                                                     // speak the message
                                                     new SayTask().execute(outMessage.getMessage());
                                                     break;
@@ -309,6 +345,8 @@ public class MainActivity extends AppCompatActivity {
                                         runOnUiThread(new Runnable() {
                                             public void run() {
                                                 mAdapter.notifyDataSetChanged();
+
+
                                                 if (mAdapter.getItemCount() > 1) {
                                                     recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, mAdapter.getItemCount() - 1);
 
@@ -342,13 +380,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }).start();
             listening = true;
-            Toast.makeText(MainActivity.this, "Listening....Click to Stop", Toast.LENGTH_LONG).show();
+            //Toast.makeText(MainActivity.this, "Listening....Click to Stop", Toast.LENGTH_LONG).show();
 
         } else {
             try {
                 microphoneHelper.closeInputStream();
                 listening = false;
-                Toast.makeText(MainActivity.this, "Stopped Listening....Click to Start", Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, "Stopped Listening....Click to Start", Toast.LENGTH_LONG).show();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -419,6 +457,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onClick(View view) {
+
+        Toast.makeText(getApplicationContext(),"wdasda",Toast.LENGTH_SHORT).show();
+        Log.i("CLICKED","sadasdad");
+
+    }
+
 
     private class SayTask extends AsyncTask<String, Void, String> {
         @Override
@@ -452,6 +498,33 @@ public class MainActivity extends AppCompatActivity {
         public void onDisconnected() {
             enableMicButton();
         }
+
+    }
+
+    private void showStreakDialog(){
+        Dialog dialog = new Dialog(MainActivity.this);
+        dialog.setContentView(R.layout.layout_dialog);
+        dialog.setCancelable(true);
+        dialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT,WindowManager.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        streak_current_user = sharedPref.getInt("streak2", 1);
+
+
+        TextView tvCurrentUserStreak = dialog.findViewById(R.id.tvCurrentUserStreak);
+        tvCurrentUserStreak.setText((900 - streak_current_user*3)  + ". Deniz Can Ilgın | " +  streak_current_user);
+
+        streak_current_user++;
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("streak2", streak_current_user);
+        editor.commit();
+
+
+        createServices();
+
+        dialog.show();
 
     }
 
