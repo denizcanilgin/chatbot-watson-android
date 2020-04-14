@@ -7,6 +7,8 @@
     android:paddingLeft="16dp"
     android:paddingBottom="5dp">
 
+
+
     <!--<TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,6 +27,26 @@
         android:textColor="@android:color/black"
         android:textIsSelectable="true"
         android:textSize="14sp" />
+
+
+    <Button
+        android:id="@+id/bt_gotoSource"
+        android:visibility="gone"
+        android:text="@string/gotoSource"
+        android:drawableLeft="@drawable/ic_link_black_24dp"
+        android:paddingStart="25dp"
+        android:drawablePadding="-50dp"
+        android:background="@drawable/source_button_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/image"
+        android:visibility="gone"
+
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        />
 
 
 </LinearLayout>

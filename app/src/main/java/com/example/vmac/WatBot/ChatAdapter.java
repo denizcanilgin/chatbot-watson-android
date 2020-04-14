@@ -6,10 +6,14 @@ package com.example.vmac.WatBot;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +27,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     protected Activity activity;
     private int SELF = 100;
+    private int SOURCE = 101;
     private ArrayList<Message> messageArrayList;
     private Context context;
 
@@ -49,6 +54,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
 
+
         return new ViewHolder(itemView);
     }
 
@@ -59,12 +65,42 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return SELF;
         }
 
+
         return position;
     }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         Message message = messageArrayList.get(position);
+
+            if(!message.isSourced()){
+
+                ((ViewHolder) holder).bt_source.setVisibility(View.GONE);
+
+
+
+            }else{
+
+                String image_url = message.getImage_url();
+                final String source_url = message.getSource_url();
+                ((ViewHolder) holder).bt_source.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(source_url));
+                        context.startActivity(browserIntent);
+                    }
+                });
+
+                Log.i("IMAGE_URL_POST","" + image_url);
+                ImageView iv = ((ViewHolder) holder).image;
+                iv.setVisibility(View.VISIBLE);
+                Glide
+                        .with(iv.getContext())
+                        .load(image_url)
+                        .into(iv);
+
+            }
+
         switch (message.type) {
             case TEXT:
                 ((ViewHolder) holder).message.setText(message.getMessage());
@@ -87,11 +123,21 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView message;
         ImageView image;
+        Button bt_source;
 
         public ViewHolder(View view) {
             super(view);
             message = (TextView) itemView.findViewById(R.id.message);
             image = (ImageView) itemView.findViewById(R.id.image);
+            bt_source = (Button) itemView.findViewById(R.id.bt_gotoSource);
+
+
+//            bt_source.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    Toast.makeText(context,"asdasd",0).show();
+//                }
+//            });
 
             //TODO: Uncomment this if you want to use a custom Font
             /*String customFont = "Montserrat-Regular.ttf";
